@@ -12,10 +12,11 @@ export class DataStorageService {
 
   constructor(private http: HttpClient, private recipeService: RecipeService, private route: ActivatedRoute) { }
 
-  id:number;
+  id: number;
 
   storeRecipe() {
     const recipes = this.recipeService.getRecipes();
+    console.log(recipes)
     //   this.route.params.subscribe((param: Params)=>{
     //     this.id = +param['id']
     //   })
@@ -30,11 +31,11 @@ export class DataStorageService {
     // else{
     this.http.post(
       'http://localhost:3000/recipes',
-      recipes[0]
+      recipes
     ).subscribe((res) => {
       console.log(res)
     })
-  // }
+    // }
   }
 
   fetchRecipe() {

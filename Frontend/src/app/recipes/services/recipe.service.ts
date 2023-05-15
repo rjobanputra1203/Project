@@ -10,12 +10,6 @@ import { Subject } from 'rxjs';
 export class RecipeService {
   recipeChanged = new Subject<Recipe[]>()
   recipes: Recipe[]=[
-    {
-      "name": "Dhokla",
-      "imagePath": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSNUTL1kkwk3knQpsgIAL2XedzuoDj8oGtuw&usqp=CAU",
-      "description": "aaaaaaaaaaaa",
-      "ingredients": []
-    }
   ];
   constructor(private shoppingService: ShoppingService) { }
 

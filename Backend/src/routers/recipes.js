@@ -7,16 +7,30 @@ const router = new express.Router()
 //This is for adding a new recipe 
 
 router.post('/recipes', async (req, res) => {
-  
-    await Recipe.deleteMany();
-    console.log(req.body)
-    const recipe = new Recipe(req.body)
-    console.log(recipe)
+
+    await Recipe.deleteMany()
+
     try {
         console.log("in try")
-        
-        await recipe.save()
-        res.status(201).send(recipe)
+        const recipes = req.body
+        console.log("Recived REQUEST BODY ++++++++++++",req.body)
+        let temp = {}
+        let response = []
+        recipes.map(async (recipe) => {
+            if(recipe._id){
+                temp =await Recipe.updateOne(recipe)
+            }
+            else{
+
+               temp =  new Recipe(recipe).save()
+            }
+            console.log(temp,"+++++++++++++++++++")
+            // response.push(await temp.save())
+            response.push(temp)
+        })
+     
+        res.status(201).send(response)    
+
     } catch (error) {
         console.log(error)
         res.status(400).send(error)
