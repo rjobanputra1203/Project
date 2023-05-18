@@ -1,4 +1,5 @@
 const express = require('express')
+const bodyParser = require('body-parser');      
 require("./db/connection.js")
 // require()
 const cors = require ("cors")
@@ -19,6 +20,8 @@ const recipe = require('./routers/recipes')
 
 
 app.use(express.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(recipe)
 
 

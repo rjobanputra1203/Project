@@ -4,13 +4,14 @@ import { RecipeService } from '../recipes/services/recipe.service';
 import { Recipe } from '../recipes/recipes.model';
 import { map, tap } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
+import { authservice } from '../auth/auth.servises';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataStorageService {
 
-  constructor(private http: HttpClient, private recipeService: RecipeService, private route: ActivatedRoute) { }
+  constructor(private http: HttpClient, private authService: authservice, private recipeService: RecipeService, private route: ActivatedRoute) { }
 
   id: number;
 
@@ -40,16 +41,16 @@ export class DataStorageService {
 
   fetchRecipe() {
     return this.http.get<Recipe[]>(
-      'http://localhost:3000/recipes'
+      `http://localhost:3000/recipes?email=${this.authService.user.email}`,
     ).pipe(
       map(recipes => {
         return recipes.map(recipe => {
-          return { ...recipe, ingredients: recipe.ingredients ? recipe.ingredients : [] }
+          return recipe
         })
       }),
-      tap((recipes) => {
-        this.recipeService.setRecipe(recipes);
-
+      tap((recipes: any) => {
+        console.log(recipes[0].userRecipes)
+        this.recipeService.setRecipe(recipes.flatMap(r => r.userRecipes));
       })
     )
   }

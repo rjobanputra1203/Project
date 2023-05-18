@@ -1,5 +1,6 @@
 const express = require('express')
 const Recipe = require("../models/recipes")
+const bodyParser = require('body-parser');      
 
 const router = new express.Router()
 
@@ -8,28 +9,25 @@ const router = new express.Router()
 
 router.post('/recipes', async (req, res) => {
 
-    await Recipe.deleteMany()
+    // await Recipe.deleteMany()
 
     try {
         console.log("in try")
         const recipes = req.body
-        console.log("Recived REQUEST BODY ++++++++++++",req.body)
+        console.log("Recived REQUEST BODY ++++++++++++\n", recipes)
+        if (recipes.length !== 0) {
+            const user = await Recipe.find({ userEmail: recipes[0].created_by })
+            console.log(user)
+            if (user.length !== 0) {
+                await Recipe.updateOne({ userEmail: recipes[0].created_by }, { $set: { userRecipes: recipes } })
+            }
+            else {
+                await Recipe.create({ userEmail: recipes[0].created_by, userRecipes: recipes })
+            }
+        }
         let temp = {}
         let response = []
-        recipes.map(async (recipe) => {
-            if(recipe._id){
-                temp =await Recipe.updateOne(recipe)
-            }
-            else{
-
-               temp =  new Recipe(recipe).save()
-            }
-            console.log(temp,"+++++++++++++++++++")
-            // response.push(await temp.save())
-            response.push(temp)
-        })
-     
-        res.status(201).send(response)    
+        res.status(201).send(response)
 
     } catch (error) {
         console.log(error)
@@ -42,7 +40,17 @@ router.post('/recipes', async (req, res) => {
 
 router.get('/recipes', async (req, res) => {
     try {
-        const recipes = await Recipe.find()
+        const {email} = req.query;
+        console.log(email)
+        let recipes
+        if (email === "admin@argusoft.com") {
+            recipes = await Recipe.find();
+            console.log(recipes)
+        } else {
+            recipes = await Recipe.find({ userEmail: email });
+        }
+
+        // const recipes = await Recipe.find({userEmail: email})
         res.status(200).send(recipes)
     } catch (error) {
         console.log(error)
